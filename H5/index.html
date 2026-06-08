@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
   <title>HorizonQuant - 量化组合管理</title>
   <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
@@ -18,7 +19,7 @@
   .btn{background:#2563EB;color:white;padding:14px 0;border-radius:16px;font-size:17px;font-weight:600;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
   .modal{position:fixed;top:0;left:0;width:375px;height:812px;background:white;z-index:200;display:none;overflow-y:auto}
   .modal.show{display:block}
-  .clickable{cursor:pointer}
+  .clickable{cursor:pointer;-webkit-tap-highlight-color:transparent}
   </style>
 </head>
 <body class="flex justify-center items-start min-h-screen bg-gray-200">
@@ -109,31 +110,35 @@
     </div>
   </div>
   <script>
-  const portfolios=[{name:"稳健增长组合",color:"#34C759",data:[10,15,12,18,22,25,34.72]},{name:"科技先锋组合",color:"#34C759",data:[5,20,15,25,30,22,18.55]},{name:"消费龙头组合",color:"#34C759",data:[2,4,3,6,8,7,8.92]}];
-  function initMiniCharts(){portfolios.forEach((p,i)=>{const dom=document.getElementById(`mini-chart-${i+1}`);if(!dom)return;const c=echarts.init(dom);c.setOption({grid:{left:0,right:0,top:10,bottom:0},xAxis:{type:'category',show:false},yAxis:{type:'value',show:false},series:[{data:p.data,type:'line',smooth:true,symbol:'none',lineStyle:{color:p.color,width:2},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:p.color+'44'},{offset:1,color:p.color+'00'}])}}]})})})
-  var chartData={3m:{labels:['2025/01','2025/02','2025/03'],data:[10,18,34.72]},1y:{labels:['2024/03','2024/06','2024/09','2024/12','2025/03'],data:[0,8,15,22,34.72]},all:{labels:['2024/03','2024/06','2024/09','2024/12','2025/03'],data:[0,8,15,22,34.72]}};
-  function initDetailCharts(period){
-    if(!period)period='3m';
-    var main=document.getElementById('detail-main-chart');
-    var mc=echarts.init(main);
-    var d=chartData[period]||chartData['3m'];
-    mc.setOption({grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'category',boundaryGap:false,data:d.labels,axisLine:{lineStyle:{color:'#E5E6EB'}},axisLabel:{color:'#86909C',fontSize:10}},yAxis:{type:'value',axisLabel:{formatter:'{value}%',color:'#86909C',fontSize:10},splitLine:{lineStyle:{type:'dashed',color:'#F2F3F5'}}},series:[{name:'组合收益',type:'line',smooth:true,symbol:'circle',symbolSize:6,itemStyle:{color:'#2563EB'},lineStyle:{width:3},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#2563EB33'},{offset:1,color:'#2563EB00'}])},data:d.data}]});
-  }
-  function switchPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');if(id==='list')setTimeout(initMiniCharts,50);else if(id==='detail')setTimeout(function(){initDetailCharts('3m')},50)}
-  function goToDetail(i){document.getElementById('detail-title').innerText=portfolios[i].name;switchPage('detail')}
-  function showModal(){document.getElementById('tradeModal').style.display='block'}
-  function hideModal(){document.getElementById('tradeModal').style.display='none'}
-  // 使用addEventListener绑定事件
-  document.querySelectorAll('.clickable').forEach(function(el){
-    el.addEventListener('click',function(e){
-      var idx=this.getAttribute('data-idx');
-      if(idx!==null){goToDetail(parseInt(idx))}
-      if(this.id==='btn-back'){switchPage('list')}
-      if(this.id==='btn-trade'){showModal()}
-      if(this.id==='btn-modal-back'||this.id==='btn-modal-done'){hideModal()}
+  (function(){
+    var portfolios=[{name:"稳健增长组合",color:"#34C759",data:[10,15,12,18,22,25,34.72]},{name:"科技先锋组合",color:"#34C759",data:[5,20,15,25,30,22,18.55]},{name:"消费龙头组合",color:"#34C759",data:[2,4,3,6,8,7,8.92]}];
+    var chartData={3m:{labels:['2025/01','2025/02','2025/03'],data:[10,18,34.72]},1y:{labels:['2024/03','2024/06','2024/09','2024/12','2025/03'],data:[0,8,15,22,34.72]},all:{labels:['2024/03','2024/06','2024/09','2024/12','2025/03'],data:[0,8,15,22,34.72]}};
+    window.App={portfolios:portfolios,chartData:chartData};
+    window.initMiniCharts=function(){portfolios.forEach(function(p,i){var dom=document.getElementById('mini-chart-'+(i+1));if(!dom)return;var c=echarts.init(dom);c.setOption({grid:{left:0,right:0,top:10,bottom:0},xAxis:{type:'category',show:false},yAxis:{type:'value',show:false},series:[{data:p.data,type:'line',smooth:true,symbol:'none',lineStyle:{color:p.color,width:2},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:p.color+'44'},{offset:1,color:p.color+'00'}])}}]})})};
+    window.initDetailCharts=function(period){
+      if(!period)period='3m';
+      var main=document.getElementById('detail-main-chart');
+      var mc=echarts.init(main);
+      var d=chartData[period]||chartData['3m'];
+      mc.setOption({grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'category',boundaryGap:false,data:d.labels,axisLine:{lineStyle:{color:'#E5E6EB'}},axisLabel:{color:'#86909C',fontSize:10}},yAxis:{type:'value',axisLabel:{formatter:'{value}%',color:'#86909C',fontSize:10},splitLine:{lineStyle:{type:'dashed',color:'#F2F3F5'}}},series:[{name:'组合收益',type:'line',smooth:true,symbol:'circle',symbolSize:6,itemStyle:{color:'#2563EB'},lineStyle:{width:3},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#2563EB33'},{offset:1,color:'#2563EB00'}])},data:d.data}]});
+    };
+    window.switchPage=function(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');if(id==='list')setTimeout(initMiniCharts,50);else if(id==='detail')setTimeout(function(){initDetailCharts('3m')},50)};
+    window.goToDetail=function(i){document.getElementById('detail-title').innerText=portfolios[i].name;switchPage('detail')};
+    window.showModal=function(){document.getElementById('tradeModal').style.display='block'};
+    window.hideModal=function(){document.getElementById('tradeModal').style.display='none'};
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('.clickable').forEach(function(el){
+        el.addEventListener('click',function(e){
+          var idx=this.getAttribute('data-idx');
+          if(idx!==null){goToDetail(parseInt(idx))}
+          if(this.id==='btn-back'){switchPage('list')}
+          if(this.id==='btn-trade'){showModal()}
+          if(this.id==='btn-modal-back'||this.id==='btn-modal-done'){hideModal()}
+        });
+      });
+      initMiniCharts();
     });
-  });
-  window.onload=function(){initMiniCharts()};
+  })();
   </script>
 </body>
 </html>
