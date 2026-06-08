@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>HorizonQuant - 量化组合管理</title>
+  <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+  <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+  <script src="https://modao.cc/agent-py/static/source/js/echarts.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#F5F7FA;-webkit-tap-highlight-color:transparent}
+  .page{display:none}
+  .page.active{display:block}
+  .chart-mini{width:100%;height:100px}
+  .chart-detail{width:100%;height:240px}
+  .btn{background:#2563EB;color:white;padding:14px 0;border-radius:16px;font-size:17px;font-weight:600;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+  .modal{position:fixed;top:0;left:0;width:375px;height:812px;background:white;z-index:200;display:none;overflow-y:auto}
+  .modal.show{display:block}
+  </style>
+</head>
+<body class="flex justify-center items-start min-h-screen bg-gray-200">
+<div class="relative w-[375px] h-[812px] bg-[#F5F7FA] shadow-2xl overflow-hidden flex flex-col">
+  <div class="page active flex-1 overflow-y-auto pb-24" id="page-list">
+    <header class="sticky top-0 z-10 bg-white px-4 py-3 flex items-center justify-between border-b border-[#E5E6EB]">
+      <div></div>
+      <h1 class="text-[18px] font-bold text-[#1D2129]">HorizonQuant</h1>
+      <div></div>
+    </header>
+    <div class="p-4 space-y-4">
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]" onclick="goToDetail(0)">
+        <div class="flex justify-between items-start mb-2">
+          <div><h3 class="text-[16px] font-bold text-[#1D2129]">稳健增长组合</h3><p class="text-[12px] text-[#86909C]">更新于 10分钟前</p></div>
+          <div class="text-right"><div class="text-[20px] font-bold text-[#34C759]">+34.72%</div><div class="text-[12px] text-[#34C759]">日收益 +2.18%</div></div>
+        </div>
+        <div class="chart-mini" id="mini-chart-1"></div>
+      </div>
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]" onclick="goToDetail(1)">
+        <div class="flex justify-between items-start mb-2">
+          <div><h3 class="text-[16px] font-bold text-[#1D2129]">科技先锋组合</h3><p class="text-[12px] text-[#86909C]">更新于 2小时前</p></div>
+          <div class="text-right"><div class="text-[20px] font-bold text-[#34C759]">+18.55%</div><div class="text-[12px] text-[#FF3B30]">日收益 -0.87%</div></div>
+        </div>
+        <div class="chart-mini" id="mini-chart-2"></div>
+      </div>
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]" onclick="goToDetail(2)">
+        <div class="flex justify-between items-start mb-2">
+          <div><h3 class="text-[16px] font-bold text-[#1D2129]">消费龙头组合</h3><p class="text-[12px] text-[#86909C]">更新于 3天前</p></div>
+          <div class="text-right"><div class="text-[20px] font-bold text-[#34C759]">+8.92%</div><div class="text-[12px] text-[#34C759]">日收益 +1.23%</div></div>
+        </div>
+        <div class="chart-mini" id="mini-chart-3"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E6EB] py-2 px-4 flex justify-around z-20">
+    <div class="flex flex-col items-center text-[#2563EB]">
+      <iconify-icon class="text-xl" icon="lucide:folder"></iconify-icon>
+      <span class="text-[10px] mt-1">组合</span>
+    </div>
+  </div>
+  <div class="page flex-1 overflow-y-auto pb-24" id="page-detail">
+    <header class="sticky top-0 z-10 bg-white px-4 py-3 flex items-center justify-between border-b border-[#E5E6EB]">
+      <button class="text-2xl text-[#1D2129] bg-transparent border-none cursor-pointer" onclick="switchPage('list')"><iconify-icon icon="lucide:chevron-left"></iconify-icon></button>
+      <h1 class="text-[18px] font-bold text-[#1D2129]" id="detail-title">稳健增长组合</h1>
+      <div></div>
+    </header>
+    <div class="p-4 space-y-6">
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]">
+        <div class="flex items-baseline gap-2"><span class="text-[28px] font-bold text-[#34C759]">+34.72%</span><span class="text-[14px] text-[#86909C]">总收益</span></div>
+        <div class="flex gap-4 mt-2 text-[14px]">
+          <div class="flex items-center gap-1"><span class="text-[#86909C]">月收益</span><span class="text-[#34C759] font-medium">+5.23%</span></div>
+          <div class="flex items-center gap-1 border-l border-[#E5E6EB] pl-4"><span class="text-[#86909C]">净值</span><span class="text-[#1D2129] font-medium">1.3472</span></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]">
+        <h3 class="text-[16px] font-bold text-[#1D2129] mb-4">组合收益</h3>
+        <div class="chart-detail" id="detail-main-chart" style="width:100%;height:240px"></div>
+      </div>
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]">
+        <div class="flex justify-between items-center mb-3"><h3 class="text-[16px] font-bold text-[#1D2129]">当前仓位</h3><span class="text-[18px] font-bold text-[#2563EB]">85%</span></div>
+        <div class="w-full bg-[#E8F0FE] h-3 rounded-full overflow-hidden"><div class="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] h-full rounded-full" style="width:85%"></div></div>
+      </div>
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]">
+        <h3 class="text-[16px] font-bold text-[#1D2129] mb-4">持仓明细</h3>
+        <table class="w-full text-[13px]">
+          <thead><tr class="text-[#86909C] border-b border-[#F2F3F5]"><th class="text-left py-2 font-normal">股票/代码</th><th class="text-right py-2 font-normal">占比</th><th class="text-right py-2 font-normal">市值</th><th class="text-right py-2 font-normal">盈亏</th></tr></thead>
+          <tbody class="divide-y divide-[#F2F3F5]">
+          <tr><td class="py-3"><div class="font-medium text-[#1D2129]">腾讯控股</div><div class="text-[11px] text-[#86909C]">00700.HK</div></td><td class="text-right">25.3%</td><td class="text-right">¥84,650</td><td class="text-right text-[#34C759]">+12.5%</td></tr>
+          <tr><td class="py-3"><div class="font-medium text-[#1D2129]">贵州茅台</div><div class="text-[11px] text-[#86909C]">600519.SH</div></td><td class="text-right">18.7%</td><td class="text-right">¥62,380</td><td class="text-right text-[#FF3B30]">-2.1%</td></tr>
+          <tr><td class="py-3"><div class="font-medium text-[#1D2129]">宁德时代</div><div class="text-[11px] text-[#86909C]">300750.SZ</div></td><td class="text-right">15.2%</td><td class="text-right">¥50,720</td><td class="text-right text-[#34C759]">+8.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]">
+        <button class="btn" style="display:block;width:100%" onclick="showModal()">调仓</button>
+      </div>
+    </div>
+  </div>
+  <div id="tradeModal" class="modal">
+    <div style="padding:16px">
+      <div style="background:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E5E6EB;margin:-16px -16px 16px -16px">
+        <div style="display:flex;align-items:center;gap:4px;cursor:pointer" onclick="hideModal()">
+          <iconify-icon style="color:#1D2129;font-size:20px" icon="lucide:chevron-left"></iconify-icon>
+          <h3 style="font-size:18px;font-weight:600;color:#1D2129;margin-left:4px">调仓</h3>
+        </div>
+        <span style="color:#FF7822;font-size:15px;cursor:pointer" onclick="hideModal()">完成</span>
+      </div>
+    </div>
+  </div>
+  <script>
+  const portfolios=[{name:"稳健增长组合",color:"#34C759",data:[10,15,12,18,22,25,34.72]},{name:"科技先锋组合",color:"#34C759",data:[5,20,15,25,30,22,18.55]},{name:"消费龙头组合",color:"#34C759",data:[2,4,3,6,8,7,8.92]}];
+  function initMiniCharts(){portfolios.forEach((p,i)=>{const dom=document.getElementById(`mini-chart-${i+1}`);if(!dom)return;const c=echarts.init(dom);c.setOption({grid:{left:0,right:0,top:10,bottom:0},xAxis:{type:'category',show:false},yAxis:{type:'value',show:false},series:[{data:p.data,type:'line',smooth:true,symbol:'none',lineStyle:{color:p.color,width:2},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:p.color+'44'},{offset:1,color:p.color+'00'}])}}]})})})
+  var chartData={3m:{labels:['2025/01','2025/02','2025/03'],data:[10,18,34.72]},1y:{labels:['2024/03','2024/06','2024/09','2024/12','2025/03'],data:[0,8,15,22,34.72]},all:{labels:['2024/03','2024/06','2024/09','2024/12','2025/03'],data:[0,8,15,22,34.72]}};
+  function initDetailCharts(period){
+    if(!period)period='3m';
+    var main=document.getElementById('detail-main-chart');
+    var mc=echarts.init(main);
+    var d=chartData[period]||chartData['3m'];
+    mc.setOption({grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'category',boundaryGap:false,data:d.labels,axisLine:{lineStyle:{color:'#E5E6EB'}},axisLabel:{color:'#86909C',fontSize:10}},yAxis:{type:'value',axisLabel:{formatter:'{value}%',color:'#86909C',fontSize:10},splitLine:{lineStyle:{type:'dashed',color:'#F2F3F5'}}},series:[{name:'组合收益',type:'line',smooth:true,symbol:'circle',symbolSize:6,itemStyle:{color:'#2563EB'},lineStyle:{width:3},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#2563EB33'},{offset:1,color:'#2563EB00'}])},data:d.data}]});
+  }
+  function switchPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(`page-${id}`).classList.add('active');if(id==='list')setTimeout(initMiniCharts,50);else if(id==='detail')setTimeout(()=>initDetailCharts('3m'),50)}
+  function goToDetail(i){document.getElementById('detail-title').innerText=portfolios[i].name;switchPage('detail')}
+  function showModal(){document.getElementById('tradeModal').style.display='block'}
+  function hideModal(){document.getElementById('tradeModal').style.display='none'}
+  window.onload=function(){initMiniCharts();var now=new Date();var dt=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');document.getElementById('recent-rebalance-time').innerText=dt};
+  </script>
+</body>
+</html>
