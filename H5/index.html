@@ -18,6 +18,7 @@
   .btn{background:#2563EB;color:white;padding:14px 0;border-radius:16px;font-size:17px;font-weight:600;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
   .modal{position:fixed;top:0;left:0;width:375px;height:812px;background:white;z-index:200;display:none;overflow-y:auto}
   .modal.show{display:block}
+  .clickable{cursor:pointer}
   </style>
 </head>
 <body class="flex justify-center items-start min-h-screen bg-gray-200">
@@ -29,21 +30,21 @@
       <div></div>
     </header>
     <div class="p-4 space-y-4">
-      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]" onclick="goToDetail(0)">
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB] clickable" data-idx="0">
         <div class="flex justify-between items-start mb-2">
           <div><h3 class="text-[16px] font-bold text-[#1D2129]">稳健增长组合</h3><p class="text-[12px] text-[#86909C]">更新于 10分钟前</p></div>
           <div class="text-right"><div class="text-[20px] font-bold text-[#34C759]">+34.72%</div><div class="text-[12px] text-[#34C759]">日收益 +2.18%</div></div>
         </div>
         <div class="chart-mini" id="mini-chart-1"></div>
       </div>
-      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]" onclick="goToDetail(1)">
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB] clickable" data-idx="1">
         <div class="flex justify-between items-start mb-2">
           <div><h3 class="text-[16px] font-bold text-[#1D2129]">科技先锋组合</h3><p class="text-[12px] text-[#86909C]">更新于 2小时前</p></div>
           <div class="text-right"><div class="text-[20px] font-bold text-[#34C759]">+18.55%</div><div class="text-[12px] text-[#FF3B30]">日收益 -0.87%</div></div>
         </div>
         <div class="chart-mini" id="mini-chart-2"></div>
       </div>
-      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]" onclick="goToDetail(2)">
+      <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB] clickable" data-idx="2">
         <div class="flex justify-between items-start mb-2">
           <div><h3 class="text-[16px] font-bold text-[#1D2129]">消费龙头组合</h3><p class="text-[12px] text-[#86909C]">更新于 3天前</p></div>
           <div class="text-right"><div class="text-[20px] font-bold text-[#34C759]">+8.92%</div><div class="text-[12px] text-[#34C759]">日收益 +1.23%</div></div>
@@ -60,7 +61,7 @@
   </div>
   <div class="page flex-1 overflow-y-auto pb-24" id="page-detail">
     <header class="sticky top-0 z-10 bg-white px-4 py-3 flex items-center justify-between border-b border-[#E5E6EB]">
-      <button class="text-2xl text-[#1D2129] bg-transparent border-none cursor-pointer" onclick="switchPage('list')"><iconify-icon icon="lucide:chevron-left"></iconify-icon></button>
+      <button class="text-2xl text-[#1D2129] bg-transparent border-none cursor-pointer clickable" id="btn-back"><iconify-icon icon="lucide:chevron-left"></iconify-icon></button>
       <h1 class="text-[18px] font-bold text-[#1D2129]" id="detail-title">稳健增长组合</h1>
       <div></div>
     </header>
@@ -92,18 +93,18 @@
         </table>
       </div>
       <div class="bg-white rounded-[16px] p-4 shadow-sm border border-[#E5E6EB]">
-        <button class="btn" style="display:block;width:100%" onclick="showModal()">调仓</button>
+        <button class="btn clickable" id="btn-trade" style="display:block;width:100%">调仓</button>
       </div>
     </div>
   </div>
   <div id="tradeModal" class="modal">
     <div style="padding:16px">
       <div style="background:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E5E6EB;margin:-16px -16px 16px -16px">
-        <div style="display:flex;align-items:center;gap:4px;cursor:pointer" onclick="hideModal()">
+        <div class="clickable" id="btn-modal-back" style="display:flex;align-items:center;gap:4px;">
           <iconify-icon style="color:#1D2129;font-size:20px" icon="lucide:chevron-left"></iconify-icon>
           <h3 style="font-size:18px;font-weight:600;color:#1D2129;margin-left:4px">调仓</h3>
         </div>
-        <span style="color:#FF7822;font-size:15px;cursor:pointer" onclick="hideModal()">完成</span>
+        <span class="clickable" id="btn-modal-done" style="color:#FF7822;font-size:15px;">完成</span>
       </div>
     </div>
   </div>
@@ -118,11 +119,21 @@
     var d=chartData[period]||chartData['3m'];
     mc.setOption({grid:{left:'3%',right:'4%',bottom:'3%',containLabel:true},xAxis:{type:'category',boundaryGap:false,data:d.labels,axisLine:{lineStyle:{color:'#E5E6EB'}},axisLabel:{color:'#86909C',fontSize:10}},yAxis:{type:'value',axisLabel:{formatter:'{value}%',color:'#86909C',fontSize:10},splitLine:{lineStyle:{type:'dashed',color:'#F2F3F5'}}},series:[{name:'组合收益',type:'line',smooth:true,symbol:'circle',symbolSize:6,itemStyle:{color:'#2563EB'},lineStyle:{width:3},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#2563EB33'},{offset:1,color:'#2563EB00'}])},data:d.data}]});
   }
-  function switchPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(`page-${id}`).classList.add('active');if(id==='list')setTimeout(initMiniCharts,50);else if(id==='detail')setTimeout(()=>initDetailCharts('3m'),50)}
+  function switchPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');if(id==='list')setTimeout(initMiniCharts,50);else if(id==='detail')setTimeout(function(){initDetailCharts('3m')},50)}
   function goToDetail(i){document.getElementById('detail-title').innerText=portfolios[i].name;switchPage('detail')}
   function showModal(){document.getElementById('tradeModal').style.display='block'}
   function hideModal(){document.getElementById('tradeModal').style.display='none'}
-  window.onload=function(){initMiniCharts();var now=new Date();var dt=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');document.getElementById('recent-rebalance-time').innerText=dt};
+  // 使用addEventListener绑定事件
+  document.querySelectorAll('.clickable').forEach(function(el){
+    el.addEventListener('click',function(e){
+      var idx=this.getAttribute('data-idx');
+      if(idx!==null){goToDetail(parseInt(idx))}
+      if(this.id==='btn-back'){switchPage('list')}
+      if(this.id==='btn-trade'){showModal()}
+      if(this.id==='btn-modal-back'||this.id==='btn-modal-done'){hideModal()}
+    });
+  });
+  window.onload=function(){initMiniCharts()};
   </script>
 </body>
 </html>
