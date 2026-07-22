@@ -20,14 +20,17 @@ body {
   overscroll-behavior: none;
 }
 
+/* Safe area for mobile */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+/* Prevent pull-to-refresh */
 body {
   overscroll-behavior-y: contain;
 }
 
+/* Hide scrollbar but keep functionality */
 ::-webkit-scrollbar {
   display: none;
 }
