@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
+import { strategyApi } from '../api'
 
 // ═══════════════════════════════════════════
 // Toggle 开关组件
@@ -324,51 +325,84 @@ function StrategyCard({ strategy, isDefault, onToggleDefault, onEdit, onDelete }
 // 策略列表主页面
 // ═══════════════════════════════════════════
 export default function StrategyListScreen({ onBack }) {
-  const [strategies, setStrategies] = useState([
-    {
-      id: 'demo-1',
-      name: '稳健保守型',
-      description: '低仓位、严格止损，适合震荡行情',
-      max_position_pct: 20,
-      max_stock_pct: 30,
-      stop_loss_pct: -4,
-      take_profit_pct: 8,
-      max_daily_loss_pct: -2,
-      created_at: '2026-06-01',
-    },
-    {
-      id: 'demo-2',
-      name: '均衡进攻型',
-      description: '中等仓位、适度止损，适合趋势行情',
-      max_position_pct: 30,
-      max_stock_pct: 40,
-      stop_loss_pct: -8,
-      take_profit_pct: 15,
-      max_daily_loss_pct: -3,
-      created_at: '2026-06-05',
-    },
-  ])
-  const [defaultId, setDefaultId] = useState('demo-2')
+  const [strategies, setStrategies] = useState([])
+  const [defaultId, setDefaultId] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [editing, setEditing] = useState(null)
   const [deleting, setDeleting] = useState(null)
 
-  const handleToggleDefault = (id) => {
-    setDefaultId(prev => prev === id ? '' : id)
-  }
+  // 后端返回 create_time(ISO)，前端展示用 created_at(日期)
+  const normalize = (s) => ({ ...s, created_at: (s.create_time || '').slice(0, 10) })
 
-  const handleSave = (form) => {
-    if (editing === 'new') {
-      setStrategies(prev => [...prev, { ...form, id: Date.now().toString(), created_at: new Date().toISOString().slice(0, 10) }])
-    } else {
-      setStrategies(prev => prev.map(s => s.id === editing.id ? { ...s, ...form } : s))
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const list = await strategyApi.getList()
+        const norm = (list || []).map(normalize)
+        setStrategies(norm)
+        setDefaultId((norm.find(s => s.is_default) || {}).id || '')
+      } catch (err) {
+        setError(err.message || '加载失败')
+      } finally {
+        setLoading(false)
+      }
     }
-    setEditing(null)
+    load()
+  }, [])
+
+  const handleToggleDefault = async (id) => {
+    const willActive = defaultId !== id
+    try {
+      await strategyApi.setDefault(id, willActive)
+      setStrategies(prev => prev.map(s => ({ ...s, is_default: s.id === id ? (willActive ? 1 : 0) : 0 })))
+      setDefaultId(willActive ? id : '')
+    } catch (err) {
+      alert(err.message || '设置失败')
+    }
   }
 
-  const handleDelete = (id) => {
-    setStrategies(prev => prev.filter(s => s.id !== id))
-    setDefaultId(prev => prev === id ? '' : prev)
-    setDeleting(null)
+  const handleSave = async (form) => {
+    try {
+      if (editing === 'new') {
+        const created = await strategyApi.create(form)
+        setStrategies(prev => [...prev, normalize(created)])
+      } else {
+        const updated = await strategyApi.update(editing.id, form)
+        setStrategies(prev => prev.map(s => s.id === updated.id ? normalize(updated) : s))
+      }
+      setEditing(null)
+    } catch (err) {
+      alert(err.message || '保存失败')
+    }
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      await strategyApi.delete(id)
+      setStrategies(prev => prev.filter(s => s.id !== id))
+      setDefaultId(prev => prev === id ? '' : prev)
+      setDeleting(null)
+    } catch (err) {
+      alert(err.message || '删除失败')
+      setDeleting(null)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+        <p className="text-sm text-gray-400 text-center">{error}</p>
+      </div>
+    )
   }
 
   const deleteOverlay = deleting && (

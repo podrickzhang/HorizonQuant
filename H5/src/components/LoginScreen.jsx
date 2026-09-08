@@ -27,7 +27,7 @@ export default function LoginScreen({ onLoginSuccess }) {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">HorizonQuant</h1>
-          <p className="text-sm text-gray-500 mt-2">地平线量化</p>
+          <p className="text-sm text-gray-500 mt-2">地平线</p>
         </div>
 
         {/* Login Form */}

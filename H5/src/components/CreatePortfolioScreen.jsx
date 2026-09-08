@@ -77,126 +77,106 @@ export default function CreatePortfolioScreen({ onBack, onSuccess }) {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
-      {/* 顶部导航 */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-20 border-b border-[#F0F1F4]">
-        <button onClick={onBack} className="p-2 -ml-2 active:opacity-60">
-          <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+      {/* 顶部导航 48px */}
+      <div className="bg-white h-12 grid grid-cols-3 items-center sticky top-0 z-20 border-b border-[#E5E7EB] px-4">
+        <button onClick={onBack} className="justify-self-start p-1 -ml-1 active:opacity-60">
+          <svg className="w-5 h-5 text-[#1D2129]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-[17px] font-bold text-gray-900">创建组合</h1>
+        <h1 className="text-center text-[17px] font-medium text-[#1D2129]">创建组合</h1>
         <button
           onClick={handleCreate}
           disabled={!canCreate}
-          className={`text-[15px] font-semibold px-2 py-1 transition-colors ${
-            canCreate ? 'text-[#2563EB]' : 'text-[#C9CDD4]'
+          className={`justify-self-end text-[15px] font-medium px-1 py-1 transition-colors ${
+            canCreate ? 'text-[#2563EB]' : 'text-[#B4C1D3]'
           }`}
         >
           {loading ? '创建中...' : '创建'}
         </button>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="px-4 pt-4 space-y-3">
         {/* ===== 组合名称 ===== */}
-        <div className="bg-white rounded-2xl px-4 pt-5 pb-4">
-          <label className="block text-[13px] font-semibold text-gray-700 mb-2.5">组合名称</label>
+        <div className="bg-white rounded-[12px] px-4 py-4">
+          <label className="block text-[15px] font-medium text-[#1D2129] mb-3">组合名称</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="请输入组合名称"
             maxLength={12}
-            className="w-full h-11 px-3.5 border border-[#E4E6EB] rounded-xl text-[15px] text-gray-900 placeholder:text-[#C2C6CF] bg-white focus:outline-none focus:border-[#2563EB] transition-colors"
+            className="w-full bg-transparent border-0 border-b border-[#E5E7EB] pb-2 text-[16px] text-[#1D2129] placeholder:text-[#86909C] focus:outline-none focus:border-[#2563EB] transition-colors"
           />
           <div className="flex justify-between items-center mt-2">
-            <span className="text-[11px] text-[#C2C6CF]">2-12个字符</span>
-            <span className={`text-[11px] tabular-nums ${name.length > 0 && !isValid ? 'text-[#FF3B30]' : 'text-[#C2C6CF]'}`}>
-              {name.length}/12
-            </span>
+            <span className={`text-[12px] ${name.length > 0 && !isValid ? 'text-[#F53F3F]' : 'text-[#86909C]'}`}>2-12个字符</span>
+            <span className={`text-[12px] tabular-nums ${name.length > 0 && !isValid ? 'text-[#F53F3F]' : 'text-[#86909C]'}`}>{name.length}/12</span>
           </div>
         </div>
 
         {/* ===== 初始分配金额 ===== */}
-        <div className="bg-white rounded-2xl px-4 pt-5 pb-4">
-          <label className="block text-[13px] font-semibold text-gray-700 mb-2.5">初始分配金额</label>
+        <div className="bg-white rounded-[12px] px-4 py-4">
+          <label className="block text-[15px] font-medium text-[#1D2129] mb-3">初始分配金额</label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[15px] text-[#C2C6CF] font-medium">¥</span>
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[16px] text-[#86909C] font-medium">¥</span>
             <input
               type="text"
               inputMode="decimal"
               value={initialAmount}
               onChange={handleAmountChange}
               placeholder="0"
-              className="w-full h-11 pl-7 pr-3.5 border border-[#E4E6EB] rounded-xl text-[15px] text-gray-900 placeholder:text-[#C2C6CF] bg-white focus:outline-none focus:border-[#2563EB] transition-colors tabular-nums"
+              className="w-full bg-transparent border-0 border-b border-[#E5E7EB] pl-5 pb-2 text-[16px] text-right text-[#1D2129] placeholder:text-[#86909C] focus:outline-none focus:border-[#2563EB] transition-colors tabular-nums"
             />
           </div>
-          <p className="text-[11px] text-[#C2C6CF] mt-2">资金区间 0 ~ 1,000万</p>
+          <p className={`text-[12px] mt-2 ${initialAmount && !isAmountValid ? 'text-[#F53F3F]' : 'text-[#86909C]'}`}>资金区间 0 ~ 1,000万</p>
         </div>
 
         {/* ===== 绑定策略（可选） ===== */}
-        <div className="bg-white rounded-2xl px-4 pt-5 pb-4" ref={wrapperRef}>
-          <label className="block text-[13px] font-semibold text-gray-700 mb-2.5">
+        <div className="bg-white rounded-[12px] px-4 py-4" ref={wrapperRef}>
+          <label className="block text-[15px] font-medium text-[#1D2129] mb-3">
             绑定策略
-            <span className="ml-1 text-[11px] text-[#C2C6CF] font-normal">(可选)</span>
+            <span className="ml-1 text-[12px] text-[#86909C] font-normal">(可选)</span>
           </label>
 
-          {/* 下拉触发器：常态浅灰边框，激活浅蓝边框，纤细上下箭头 */}
+          {/* 下拉触发器：富途下划线样式 */}
           <button
             type="button"
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className={`w-full h-11 flex items-center justify-between px-3.5 border rounded-xl text-[15px] bg-white transition-colors focus:outline-none ${
-              dropdownOpen
-                ? 'border-[#2563EB] text-gray-900'
-                : 'border-[#E4E6EB] text-gray-900 hover:border-[#C2C6CF]'
-            }`}
+            className={`w-full flex items-center justify-between bg-transparent border-0 border-b pb-2 text-[16px] transition-colors focus:outline-none ${
+              dropdownOpen ? 'border-[#2563EB]' : 'border-[#E5E7EB]'
+            } ${selectedStrategy ? 'text-[#1D2129]' : 'text-[#86909C]'}`}
           >
-            <span className={selectedStrategy ? 'text-gray-900' : 'text-[#C2C6CF]'}>
-              {selectedStrategy ? selectedStrategy.name : '不绑定策略'}
-            </span>
-            {/* 纤细上下箭头 */}
-            <span className="flex flex-col items-center justify-center gap-[2px]">
-              <svg className={`w-3 h-2.5 text-[#C2C6CF] transition-colors ${dropdownOpen ? 'text-[#2563EB]' : ''}`} viewBox="0 0 10 6" fill="none">
-                <path d="M1 5L5 1L9 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <svg className={`w-3 h-2.5 text-[#C2C6CF] transition-colors ${dropdownOpen ? 'text-[#2563EB]' : ''}`} viewBox="0 0 10 6" fill="none">
-                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </span>
+            <span>{selectedStrategy ? selectedStrategy.name : '不绑定策略'}</span>
+            <svg className={`w-4 h-4 transition-colors ${dropdownOpen ? 'text-[#2563EB]' : 'text-[#86909C]'}`} viewBox="0 0 20 20" fill="none">
+              <path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
 
-          {/* 下拉弹窗：与输入框等宽，柔和圆角+浅阴影 */}
+          {/* 下拉弹窗：与输入框等宽，轻阴影 */}
           {dropdownOpen && (
-            <div className="relative mt-1">
-              <div className="absolute left-0 right-0 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#F0F1F4] z-30 overflow-hidden">
-                {/* 不绑定策略 */}
+            <div className="relative mt-2">
+              <div className="absolute left-0 right-0 bg-white rounded-[12px] shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-[#E5E7EB] z-30 overflow-hidden">
                 <button
                   onClick={() => { setStrategyId(null); setDropdownOpen(false) }}
-                  className={`w-full text-left px-3.5 py-3 text-[14px] transition-colors ${
-                    strategyId === null
-                      ? 'bg-[#EBF2FF] text-[#2563EB]'
-                      : 'text-gray-600 hover:bg-[#F8F9FB]'
+                  className={`w-full text-left px-4 py-3 text-[15px] transition-colors ${
+                    strategyId === null ? 'bg-[#EBF2FF] text-[#2563EB]' : 'text-[#4E5969] hover:bg-[#F5F7FA]'
                   }`}
                 >
                   不绑定策略
                 </button>
-
-                {/* 策略列表 */}
                 {strategyLoading ? (
-                  <div className="px-3.5 py-3 text-[13px] text-gray-400">加载中...</div>
+                  <div className="px-4 py-3 text-[13px] text-[#86909C]">加载中...</div>
                 ) : strategies.length === 0 ? (
-                  <div className="px-3.5 py-3 text-[13px] text-gray-400">暂无可用策略</div>
+                  <div className="px-4 py-3 text-[13px] text-[#86909C]">暂无可用策略</div>
                 ) : (
                   <>
-                    {/* 分隔线：标题与列表之间 */}
-                    <div className="h-px bg-[#F0F1F4]" />
+                    <div className="h-px bg-[#E5E7EB]" />
                     {strategies.map((s) => (
                       <button
                         key={s.id}
                         onClick={() => { setStrategyId(s.id); setDropdownOpen(false) }}
-                        className={`w-full text-left px-3.5 py-3 text-[14px] transition-colors ${
-                          strategyId === s.id
-                            ? 'bg-[#EBF2FF] text-[#2563EB]'
-                            : 'text-gray-600 hover:bg-[#F8F9FB]'
+                        className={`w-full text-left px-4 py-3 text-[15px] transition-colors ${
+                          strategyId === s.id ? 'bg-[#EBF2FF] text-[#2563EB]' : 'text-[#4E5969] hover:bg-[#F5F7FA]'
                         }`}
                       >
                         {s.name}
@@ -208,7 +188,7 @@ export default function CreatePortfolioScreen({ onBack, onSuccess }) {
             </div>
           )}
 
-          <p className="text-[11px] text-[#C2C6CF] mt-2">绑定后调仓自动复用策略风控规则</p>
+          <p className="text-[12px] text-[#86909C] mt-2">绑定后调仓自动复用策略风控规则</p>
         </div>
       </div>
     </div>

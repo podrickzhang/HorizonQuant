@@ -1,4 +1,11 @@
-const API_BASE_URL = 'http://127.0.0.1:8000/api'
+// 后端接口地址自动按运行环境切换：
+//   本地（localhost / 127.0.0.1）→ 连本机后端 localhost:8000，便于本地调试
+//   线上（服务器 IP / 域名）      → 连线上后端 175.178.168.185:8000
+// 也可用构建环境变量 VITE_API_URL 强制覆盖（优先级最高）
+const isLocalEnv = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+const LOCAL_API = 'http://localhost:8000'
+const REMOTE_API = 'http://175.178.168.185:8000'
+const API_BASE_URL = (import.meta.env.VITE_API_URL || (isLocalEnv ? LOCAL_API : REMOTE_API)) + '/api'
 
 // 存储token
 const getToken = () => localStorage.getItem('hq_token')
@@ -43,8 +50,8 @@ async function request(endpoint, options = {}) {
 
     return response.json()
   } catch (err) {
-    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-      throw new Error('后端服务未启动，请先启动后端服务')
+    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.name === 'TypeError') {
+      throw new Error('无法连接后端（通常是跨域 CORS 或网络问题），请确认后端已启动并允许跨域')
     }
     throw err
   }
@@ -100,7 +107,8 @@ export const strategyApi = {
   getList: () => request('/strategies'),
   create: (data) => request('/strategies', { method: 'POST', body: JSON.stringify(data) }),
   update: (id, data) => request(`/strategies/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id) => request(`/strategies/${id}`, { method: 'DELETE' })
+  delete: (id) => request(`/strategies/${id}`, { method: 'DELETE' }),
+  setDefault: (id, active) => request(`/strategies/${id}/default?active=${active}`, { method: 'PUT' })
 }
 
 // ========== 股票相关 ==========
